@@ -1,18 +1,18 @@
 {
   "manifest_version": 2,
 
-  "name": "Facebook Auto Angry",
-  "description": "This give reaction to all posts in current facebook page",
+  "name": "Facebook Auto Angry - auto on new feed",
+  "description": "This is forked from Facebook Auto Angry",
   "version": "1.0",
 
   "browser_action": {
     "default_popup": "popup.html",
-    "default_icon": "Autoangry.png"
+    "default_icon": "Logo.png"
   },
 
   "content_scripts" : [
     {
-      "js" : [ "jquery-2.2.1.min.js", "put-angry-icon.js"],
+      "js": ["bower_components/jquery/dist/jquery.min.js", "targetTab.js"],
       "matches": [ "http://*/*", "https://*/*"]
     }
   ]
