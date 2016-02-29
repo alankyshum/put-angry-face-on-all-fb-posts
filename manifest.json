@@ -12,7 +12,7 @@
 
   "content_scripts" : [
     {
-      "js": ["bower_components/jquery/dist/jquery.min.js", "targetTab.js"],
+      "js": ["bower_components/jquery/dist/jquery.min.js", "targetTab.js", "targetTab.data.js"],
       "matches": [ "http://*/*", "https://*/*"]
     }
   ]

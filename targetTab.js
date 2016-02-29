@@ -1,32 +1,62 @@
 var scroll_to_bottom_feed = (callback) => {
   var scrolled = -1;
-  var tryCnt = 0;
-  var scrollInterval = setInterval(() => {
-    if (scrolled !== window.scrollY) {
-      scrolled = window.scrollY;
-      window.scrollBy(0, 99999);
-      tryCnt = 0;
-      console.log("[scroll] scrolling");
+  var tryCnt = 0, scrollCnt = 0;
+  var loopingPage = () => {
+    if (scrollCnt > 15) {
+      // keep scrolling too frequently (per second)
+      clearInterval(scrollInterval);
+      scrollCnt = 0;
+      var timerLog = setInterval(() => {
+        console.log("WATING 60 SECONDS TO CONTINUE SCROLLING");
+      }, 1000);
+      setTimeout(() => {
+        scrollInterval = setInterval(loopingPage, 1000);
+      }, 60);
     } else {
-      if (tryCnt < 5) {
-        tryCnt++;
+      if (scrolled !== window.scrollY) {
+        scrolled = window.scrollY;
+        window.scrollBy(0, 99999);
+        scrollCnt++;
+        tryCnt = 0;
+        console.log("[scroll] scrolling");
       } else {
-        clearInterval(scrollInterval);
-        callback();
+        if (tryCnt < 5) {
+          tryCnt++; // wait for 5 sec until next page is loaded
+        } else {
+          console.log("[scrolling] DONE --> TRIGGER EMOTION BAR");
+          // TODO: trigger emotion bar
+          if (show_emotion_bar()) {
+            callback();
+          }
+          clearInterval(scrollInterval);
+        }
       }
     }
-  }, 1000);
+  }
+
+  var scrollInterval = setInterval(loopingPage, 1000);
 }
 
 var show_emotion_bar = function() {
-  var emontion_bar_parent = $('.uiContextualLayerParent ._khz > div');
-  for (var i = 0; i < emontion_bar_parent.length; ++i) {
-    emontion_bar_parent[i].className = "_1oxj _10ir";
-  }
+  // TRIGGER THE EMOTION BAR
+  
+    // if (!document.querySelector('._1oxj.accessible_elem')) {
+  //   var reactionBar = document.querySelectorAll('.uiContextualLayerParent._khz');
+  //   Object.keys(reactionBar).forEach((i) => {
+  //     reactionBar[i].innerHTML += emotionBtnHTML;
+  //   });
+  //   console.log("EMOTION BAR TRIGGERED");
+  // }
+  // return !!document.querySelector('._1oxj.accessible_elem');
 }
 
 var click_btn_on_all_post_one_by_one = function(icons) {
-  Object.keys(icons).forEach((i) => {icons[i].click();})
+  Object.keys(icons).forEach((i) => {
+    if (icons[i].parentNode.getAttribute('aria-pressed')!="true") {
+      console.log("[click on emoji] clicked");
+      icons[i].click();
+    }
+  })
 }
 
 var put_reaction_on_all_post = function(emotion) {
@@ -47,6 +77,7 @@ var put_reaction_on_all_post = function(emotion) {
 var cancel_all_emotion_on_post = function() {
   var cancel_btns = document.querySelectorAll('a.UFILikeLink.UFILinkBright');
   click_btn_on_all_post_one_by_one(cancel_btns);
+  return cancel_btns.length;
 }
 
 
@@ -72,8 +103,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendRes) => {
     case "clearAll":
       console.log("Clearing all reactions on affected page");
       scroll_to_bottom_feed(() => {
-        cancel_all_emotion_on_post();
-        sendRes("ALL CLEARED");
+        var numPosts = cancel_all_emotion_on_post();
+        sendRes(`${numPosts} POSTS CLEARED`);
       });
       break;
     default:
