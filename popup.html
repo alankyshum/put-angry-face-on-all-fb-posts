@@ -17,6 +17,9 @@
         margin-bottom: 1em;
         margin-top: 0;
       }
+      #guide {
+        font-size: 13px;
+      }
       .btn img {
         width: 100%;
       }
@@ -31,17 +34,18 @@
       }
       .reactionRow .btn.selected {
         border-color: #A6A6A6;
-      	box-shadow: inset 0px 0px 5px #C8C8C8;
+        background-color: #B9B9B9;
       }
       .actionRow {
         margin-bottom: 20px;
       }
       #detectedPages {
         height: 150px;
-        overflow-y: scroll;
+        overflow-y: auto;
       }
       #detectedPages li:hover {
         cursor: pointer;
+        background-color: #E8E8E8;
       }
     </style>
 </head>
@@ -50,14 +54,25 @@
     <div class="page-header">
       <h4>Auto React Facebook Post</h4>
     </div>
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-xs-12 text-center">
         <button id='detectBtn' type="button" class="btn btn-md btn-default">
           [1] <i class='fa fa-facebook'></i> Detect
         </button>
       </div>
     </div>
-    <hr>
+    <hr> -->
+    <div class="row">
+      <div id='guide' class="well well-sm">
+        <ol>
+          <li>Open facebook page</li>
+          <li>[IMPORTANT] <strong>Hover on the Like button</strong> TO TRIGGER THE REACTION BAR</li>
+          <li>Adjust the scroll count, <strong>too much may alert facebook to block you T.T</strong></li>
+          <li>Choose emoticon</li>
+          <li>Click "Bomb!"</li>
+        </ol>
+      </div>
+    </div>
     <div id='detectedPages'>
       <ul class='list-group'>
       </ul>
@@ -71,24 +86,20 @@
       <button class='btn btn-default' data-emoji="sad"><img src="assets/sad.png" alt="sad" /></button>
       <button class='btn btn-default' data-emoji="angry"><img src="assets/angry.png" alt="angry" /></button>
     </div>
-    <!-- <div class="row cancelRow">
-    <button class='btn btn-warning' data-action="cancel">Cancel all reaction</button>
-  </div> -->
     <div class="row actionRow">
-      <div class="col-xs-6 text-center">
-        <button id='trackBtn' type="button" class="btn btn-warning">
-          [2] <i class='fa fa-clock-o'></i> Track!
-        </button>
+      <div class="col-xs-4">
+        <label class='label label-default' for="">Scroll Count</label>
+        <br>
+        <input class='form-control' id='scrollCnt' type="number" name="name" value="500" min=50 step=10>
       </div>
-      <div class="col-xs-6 text-center">
-        <button id='bombBtn' type="button" class="btn btn-danger">
-          [2] <i class='fa fa-bolt'></i> Bomb!
-        </button>
-      </div>
-      <hr>
-      <div class="col-xs-12 text-center">
+      <div class="col-xs-4 text-center">
         <button id='clearBtn' type="button" class="btn btn-default">
-          [3] <i class='fa fa-undo'></i> Clear!
+          <i class='fa fa-undo'></i> Clear!
+        </button>
+      </div>
+      <div class="col-xs-4 text-center">
+        <button id='bombBtn' type="button" class="btn btn-danger">
+          <i class='fa fa-bolt'></i> Bomb!
         </button>
       </div>
     </div>

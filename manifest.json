@@ -1,19 +1,19 @@
 {
   "manifest_version": 2,
-
-  "name": "Facebook Auto Angry - auto on new feed",
-  "description": "This is forked from Facebook Auto Angry",
+  "name": "Facebook Batch React",
+  "description": "This is forked from Facebook Auto Angry, with more addon features. [1] Cloud-sync react status; [2] React to facebook pages on any tabs",
   "version": "1.0",
-
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "Logo.png"
   },
-
   "content_scripts" : [
     {
-      "js": ["bower_components/jquery/dist/jquery.min.js", "targetTab.js", "targetTab.data.js"],
+      "js": ["bower_components/jquery/dist/jquery.min.js", "targetTab.js"],
       "matches": [ "http://*/*", "https://*/*"]
     }
+  ],
+  "permissions": [
+    "storage"
   ]
 }

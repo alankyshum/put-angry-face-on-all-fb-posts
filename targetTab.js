@@ -1,45 +1,45 @@
-var scroll_to_bottom_feed = (callback) => {
-  var scrolled = -1;
-  var tryCnt = 0, scrollCnt = 0;
-  var loopingPage = () => {
-    if (scrollCnt > 15) {
-      // keep scrolling too frequently (per second)
-      clearInterval(scrollInterval);
+var scroll_to_bottom_feed = (postCnt, callback) => {
+  var scrolled = -1, tryCnt = 0, scrollCnt = 0;
+  var totalScrollMax = Math.round(postCnt/4);
+  var scrollingFx = () => {
+    if (totalScrollMax <= 0) {
+      callback();
+      clearInterval(scrollingInterval);
+    }
+    if (scrollCnt > 10) {
+      clearInterval(scrollingInterval);
       scrollCnt = 0;
-      var timerLog = setInterval(() => {
-        console.log("WATING 60 SECONDS TO CONTINUE SCROLLING");
-      }, 1000);
+      console.log("TOO FREQUENT SCROLLING, WAIT FOR 5 SECONDS");
       setTimeout(() => {
-        scrollInterval = setInterval(loopingPage, 1000);
-      }, 60);
+        scrollingInterval = setInterval(scrollingFx, 1500);
+      }, 5000);
     } else {
-      if (scrolled !== window.scrollY) {
+      if (scrolled != window.scrollY) {
         scrolled = window.scrollY;
         window.scrollBy(0, 99999);
+        totalScrollMax--;
         scrollCnt++;
         tryCnt = 0;
-        console.log("[scroll] scrolling");
       } else {
-        if (tryCnt < 5) {
-          tryCnt++; // wait for 5 sec until next page is loaded
-        } else {
-          console.log("[scrolling] DONE --> TRIGGER EMOTION BAR");
-          // TODO: trigger emotion bar
-          if (show_emotion_bar()) {
-            callback();
-          }
-          clearInterval(scrollInterval);
+        scrolled = window.scrollY;
+        window.scrollBy(0, 99999);
+        tryCnt++;
+        scrollCnt++
+        console.log("stopped");
+        if (tryCnt > 5) {
+          // probably the end here
+          callback();
+          clearInterval(scrollingInterval);
         }
       }
     }
-  }
-
-  var scrollInterval = setInterval(loopingPage, 1000);
+  };
+  var scrollingInterval = setInterval(scrollingFx, 1500);
 }
 
 var show_emotion_bar = function() {
   // TRIGGER THE EMOTION BAR
-  
+
     // if (!document.querySelector('._1oxj.accessible_elem')) {
   //   var reactionBar = document.querySelectorAll('.uiContextualLayerParent._khz');
   //   Object.keys(reactionBar).forEach((i) => {
@@ -95,14 +95,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendRes) => {
       break;
     case "react":
       console.log(`EMOJI: ${request.emoji}`);
-      scroll_to_bottom_feed(() => {
+      scroll_to_bottom_feed(request.scrollCnt, () => {
         var numPosts = put_reaction_on_all_post(request.emoji);
         sendRes(numPosts);
       });
       break;
     case "clearAll":
       console.log("Clearing all reactions on affected page");
-      scroll_to_bottom_feed(() => {
+      scroll_to_bottom_feed(request.scrollCnt, () => {
         var numPosts = cancel_all_emotion_on_post();
         sendRes(`${numPosts} POSTS CLEARED`);
       });
